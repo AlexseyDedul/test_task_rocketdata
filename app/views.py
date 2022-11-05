@@ -1,7 +1,8 @@
 from rest_framework import viewsets
 
-from .models import Address, Contact, Product
-from .serializers import AddressSerializer, ContactSerializer, ProductSerializer
+from .models import Address, Contact, Product, Factory, Dilercenter
+from .serializers import AddressSerializer, ContactSerializer, ProductSerializer, FactorySerializer, \
+    DilercenterSerializer
 
 
 class AddressViewSet(viewsets.ModelViewSet):
@@ -17,3 +18,13 @@ class ContactViewSet(viewsets.ModelViewSet):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+
+class FactoryViewSet(viewsets.ModelViewSet):
+    queryset = Factory.objects.all()
+    serializer_class = FactorySerializer
+
+
+class DilercenterViewSet(viewsets.ModelViewSet):
+    queryset = Dilercenter.objects.all()
+    serializer_class = DilercenterSerializer

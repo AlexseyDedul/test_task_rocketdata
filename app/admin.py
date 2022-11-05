@@ -7,76 +7,73 @@ from django.utils.http import urlencode
 # Register your models here.
 
 from .models import Address, Contact, Country, \
-    Factory, EmployeeFactory, ProductInFactory, \
-    Dilercenter, ProductInDilercenter, EmployeeDilercenter, \
-    Distributor, ProductInDistributor, EmployeeDistributor, \
-    RetailChain, ProductInRetailChain, EmployeeRetailChain, \
-    IndividualEntrepreneur, ProductInIndividualEntrepreneur, EmployeeIndividualEntrepreneur
+    Factory, Product, Dilercenter, \
+    Distributor, RetailChain, IndividualEntrepreneur, Employee
 
 
-class FactoryAdmin(admin.ModelAdmin):
+@admin.action(description='Обнулить задолжность перед поставщиком')
+def make_published(modeladmin, request, queryset):
+    temp = queryset.exclude(debt__gt=0)
+    temp.update(debt=0)
+
+
+class MyAdmin(admin.ModelAdmin):
+    def get_search_results(self, request, queryset, search_term):
+        use_distinct = False
+
+        if search_term:
+            search_result = queryset \
+                .select_related('contact') \
+                .filter(contact__address_fk__city__contains=search_term)
+            return search_result, use_distinct
+        return queryset, use_distinct
+
+
+class FactoryAdmin(MyAdmin):
     list_display = ('id', 'name', 'contact', 'debt', 'date_created')
     list_display_links = ('id', 'name')
-    search_fields = ('name',)
-
-    def get_search_results(self, request, queryset, search_term):
-
-        print(request)
-        print(queryset)
-        print(search_term)
-
-        queryset = Factory.objects\
-            .select_related('contact').all()\
-            .select_related('address')\
-            .filter(address_id=1)
-        print(queryset)
-        use_distinct = True
-        # queryset, use_distinct = super().get_search_results(request, queryset, search_term)
-        # print(use_distinct)
-        # print(queryset)
-        # try:
-        #     search_term_as_int = int(search_term)
-        # except ValueError:
-        #     pass
-        # else:
-        #     queryset |= self.model.objects.filter(age=search_term_as_int)
-        return queryset , use_distinct
+    search_fields = ('get_search_results',)
+    actions = [make_published]
 
 
-class DilercenterAdmin(admin.ModelAdmin):
+class DilercenterAdmin(MyAdmin):
     list_display = ('id', 'name', 'contact', 'show_provider', 'debt', 'date_created')
     list_display_links = ('id', 'name')
-    search_fields = ('provider',)
+    search_fields = ('get_search_results',)
+    actions = [make_published]
 
     def show_provider(self, obj):
         provider = Factory.objects.filter(id=obj.provider.id).first()
         return mark_safe(f'<a href="/admin/app/factory/{provider.id}/change/">{obj.provider}</a>')
 
 
-class DistributorAdmin(admin.ModelAdmin):
+class DistributorAdmin(MyAdmin):
     list_display = ('id', 'name', 'contact', 'show_provider', 'debt', 'date_created')
     list_display_links = ('id', 'name')
-    search_fields = ('provider',)
+    search_fields = ('get_search_results',)
+    actions = [make_published]
 
     def show_provider(self, obj):
         provider = Dilercenter.objects.filter(id=obj.provider.id).first()
         return mark_safe(f'<a href="/admin/app/dilercenter/{provider.id}/change/">{obj.provider}</a>')
 
 
-class RetailChainAdmin(admin.ModelAdmin):
+class RetailChainAdmin(MyAdmin):
     list_display = ('id', 'name', 'contact', 'show_provider', 'debt', 'date_created')
     list_display_links = ('id', 'name')
-    search_fields = ('provider',)
+    search_fields = ('get_search_results',)
+    actions = [make_published]
 
     def show_provider(self, obj):
         provider = Distributor.objects.filter(id=obj.provider.id).first()
         return mark_safe(f'<a href="/admin/app/distributor/{provider.id}/change/">{obj.provider}</a>')
 
 
-class IndividualEntrepreneurAdmin(admin.ModelAdmin):
+class IndividualEntrepreneurAdmin(MyAdmin):
     list_display = ('id', 'name', 'contact', 'show_provider', 'debt', 'date_created')
     list_display_links = ('id', 'name')
-    search_fields = ('provider',)
+    search_fields = ('get_search_results',)
+    actions = [make_published]
 
     def show_provider(self, obj):
         provider = RetailChain.objects.filter(id=obj.provider.id).first()
@@ -86,18 +83,10 @@ class IndividualEntrepreneurAdmin(admin.ModelAdmin):
 admin.site.register(Country)
 admin.site.register(Address)
 admin.site.register(Contact)
+admin.site.register(Product)
+admin.site.register(Employee)
 admin.site.register(Factory, FactoryAdmin)
-admin.site.register(EmployeeFactory)
-admin.site.register(ProductInFactory)
 admin.site.register(Dilercenter, DilercenterAdmin)
-admin.site.register(ProductInDilercenter)
-admin.site.register(EmployeeDilercenter)
 admin.site.register(Distributor, DistributorAdmin)
-admin.site.register(ProductInDistributor)
-admin.site.register(EmployeeDistributor)
 admin.site.register(RetailChain, RetailChainAdmin)
-admin.site.register(ProductInRetailChain)
-admin.site.register(EmployeeRetailChain)
 admin.site.register(IndividualEntrepreneur, IndividualEntrepreneurAdmin)
-admin.site.register(ProductInIndividualEntrepreneur)
-admin.site.register(EmployeeIndividualEntrepreneur)
