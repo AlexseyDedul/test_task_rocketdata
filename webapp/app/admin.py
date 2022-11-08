@@ -1,8 +1,10 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
+
+from django.core import serializers
 # Register your models here.
 
-from .tasks import test_cele
+# from .tasks import update_debt
 
 from .models import Address, Contact, Country, \
     Factory, Product, Dilercenter, \
@@ -11,9 +13,14 @@ from .models import Address, Contact, Country, \
 
 @admin.action(description='Обнулить задолжность перед поставщиком')
 def make_published(modeladmin, request, queryset):
+    # if len(queryset) > 5:
+    #     serializers.serialize("json", queryset)
+    #     for item in queryset:
+    #
+    #         update_debt.delay(item)
+    # else:
     temp = queryset.exclude(debt__gt=0)
     temp.update(debt=0)
-    test_cele.delay()
 
 
 class MyAdmin(admin.ModelAdmin):
