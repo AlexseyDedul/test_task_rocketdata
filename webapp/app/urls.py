@@ -1,8 +1,8 @@
-from django.urls import path
 
-from app.views import AddressViewSet, ContactViewSet, ProductViewSet, FactoryViewSet, DilercenterViewSet, \
-    DistributorViewSet, RetailChainViewSet, IndividualEntrepreneurViewSet, AllProvidersViewSet
 from rest_framework import routers
+
+from .views import AllProvidersViewSet, AddressViewSet, ContactViewSet, ProductViewSet, FactoryViewSet, \
+    DilercenterViewSet, DistributorViewSet, RetailChainViewSet, IndividualEntrepreneurViewSet
 
 router = routers.DefaultRouter()
 router.register(r'all', AllProvidersViewSet, basename='all')

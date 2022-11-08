@@ -1,8 +1,7 @@
 from django.contrib import admin
-from django.db.models.query import Prefetch
 from django.utils.safestring import mark_safe
-from django.urls import reverse
-from django.utils.http import urlencode
+
+from . import tasks
 
 # Register your models here.
 
@@ -15,6 +14,7 @@ from .models import Address, Contact, Country, \
 def make_published(modeladmin, request, queryset):
     temp = queryset.exclude(debt__gt=0)
     temp.update(debt=0)
+    # send_mail_task.delay(('dedyul@gmail.com', ), 'Celery cookbook test', 'test', {})
 
 
 class MyAdmin(admin.ModelAdmin):
