@@ -4,5 +4,6 @@ venv
 .idea
 /.idea
 __pycache__
-/test_task/.env
-./test_task/.env
+/.env
+.env
+/.env
