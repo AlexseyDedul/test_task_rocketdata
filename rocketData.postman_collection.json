@@ -362,24 +362,22 @@
 			"item": [
 				{
 					"name": "get_factory",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "12345qwe678",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "asd",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token b1ecac13d8761ac2ab112420f55f7b4d6bc4f745",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "http://127.0.0.1:8000/api/factory/",
 							"protocol": "http",
@@ -421,7 +419,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "\n   {\n        \"name\": \"Oneplus\",\n        \"contact\": {\n            \"email\": \"asdasd@fa.eqd\",\n            \"address_fk\": \"3\"\n        },\n        \"product\": [\n            2,3,4,5\n        ],\n        \"employee\": [\n            1,\n            2,\n            3\n        ]\n    }\n",
+							"raw": "\n   {\n        \"name\": \"Oneplus\",\n        \"contact\": {\n            \"email\": \"asdasd@fa.eqd\",\n            \"address_fk\": \"3\"\n        },\n        \"product\": [\n            2,3,4,5\n        ],\n        \"employee\": [\n            4,5\n        ]\n    }\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -848,7 +846,147 @@
 		},
 		{
 			"name": "Account",
-			"item": []
+			"item": [
+				{
+					"name": "registration",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "qwert",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "qwert123qwert",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "qwe@qwe.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/auth/users/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"auth",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "qwert",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "qwert123qwert",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "qwe@qwe.com",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/auth/token/login/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"auth",
+								"token",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token b1ecac13d8761ac2ab112420f55f7b4d6bc4f745",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/auth/token/logout/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"auth",
+								"token",
+								"logout",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send_email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 87081ab2bea50d534cd36a73a7af2081b4b3469c",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/send_email/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"send_email",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

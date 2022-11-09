@@ -1,29 +1,14 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from django.core import serializers
-# Register your models here.
-
-# from .tasks import update_debt
-
 from .models import Address, Contact, Country, \
     Factory, Product, Dilercenter, \
     Distributor, RetailChain, IndividualEntrepreneur, Employee
 
 
-@admin.action(description='Обнулить задолжность перед поставщиком')
-def make_published(modeladmin, request, queryset):
-    # if len(queryset) > 5:
-    #     serializers.serialize("json", queryset)
-    #     for item in queryset:
-    #
-    #         update_debt.delay(item)
-    # else:
-    temp = queryset.exclude(debt__gt=0)
-    temp.update(debt=0)
-
-
 class MyAdmin(admin.ModelAdmin):
+    actions = ['make_published']
+
     def get_search_results(self, request, queryset, search_term):
         use_distinct = False
 
@@ -34,19 +19,22 @@ class MyAdmin(admin.ModelAdmin):
             return search_result, use_distinct
         return queryset, use_distinct
 
+    @admin.action(description='Обнулить задолжность перед поставщиком')
+    def make_published(modeladmin, request, queryset):
+        temp = queryset.exclude(debt__gt=0)
+        temp.update(debt=0)
+
 
 class FactoryAdmin(MyAdmin):
     list_display = ('id', 'name', 'contact', 'debt', 'date_created')
     list_display_links = ('id', 'name')
     search_fields = ('get_search_results',)
-    actions = [make_published]
 
 
 class DilercenterAdmin(MyAdmin):
     list_display = ('id', 'name', 'contact', 'show_provider', 'debt', 'date_created')
     list_display_links = ('id', 'name')
     search_fields = ('get_search_results',)
-    actions = [make_published]
 
     def show_provider(self, obj):
         provider = Factory.objects.filter(id=obj.provider.id).first()
@@ -57,7 +45,6 @@ class DistributorAdmin(MyAdmin):
     list_display = ('id', 'name', 'contact', 'show_provider', 'debt', 'date_created')
     list_display_links = ('id', 'name')
     search_fields = ('get_search_results',)
-    actions = [make_published]
 
     def show_provider(self, obj):
         provider = Dilercenter.objects.filter(id=obj.provider.id).first()
@@ -68,7 +55,6 @@ class RetailChainAdmin(MyAdmin):
     list_display = ('id', 'name', 'contact', 'show_provider', 'debt', 'date_created')
     list_display_links = ('id', 'name')
     search_fields = ('get_search_results',)
-    actions = [make_published]
 
     def show_provider(self, obj):
         provider = Distributor.objects.filter(id=obj.provider.id).first()
@@ -79,7 +65,6 @@ class IndividualEntrepreneurAdmin(MyAdmin):
     list_display = ('id', 'name', 'contact', 'show_provider', 'debt', 'date_created')
     list_display_links = ('id', 'name')
     search_fields = ('get_search_results',)
-    actions = [make_published]
 
     def show_provider(self, obj):
         provider = RetailChain.objects.filter(id=obj.provider.id).first()

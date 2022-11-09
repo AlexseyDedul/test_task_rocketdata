@@ -3,6 +3,7 @@
 webapp/venv
 .idea
 /.idea
+./.idea
 __pycache__
 ./webapp/test_task/.env
 /webapp/test_task/.env

@@ -1,33 +1,35 @@
 import random
-from django.utils import timezone
+
+from celery.schedules import crontab
 
 from celery import shared_task
-from django_celery_beat.models import PeriodicTask, IntervalSchedule, CrontabSchedule
+from django_celery_beat.models import PeriodicTask, IntervalSchedule
 
+from test_task.celery import app
 from .models import Factory, Dilercenter, Distributor, IndividualEntrepreneur, RetailChain
+
 
 schedule_every_3_hours, created = IntervalSchedule.objects.get_or_create(
     every=3,
     period=IntervalSchedule.HOURS,
 )
-schedule_one_day, _ = CrontabSchedule.objects.get_or_create(
-    minute='30',
-    hour='6',
-)
 
 try:
     PeriodicTask.objects.create(
         interval=schedule_every_3_hours,
-        name='schedule_every_3_hours',
+        name='random_increment_debt_for_providers',
         task='random_increment_debt_for_providers',
-    )
-    PeriodicTask.objects.create(
-        crontab=schedule_one_day,
-        name='random_decrement_debt_for_providers',
-        task='random_decrement_debt_for_providers',
     )
 except:
     pass
+
+
+app.conf.beat_schedule = {
+    'every': {
+        'task': 'random_decrement_debt_for_providers',
+        'schedule': crontab(minute=30, hour=6),
+    },
+}
 
 
 @shared_task(name='random_increment_debt_for_providers')
@@ -92,11 +94,3 @@ def random_decrement_debt_for_providers():
         for ie in individual_entrepreneur:
             ie.debt = ie.debt + random.randrange(100, 10000)
             ie.save()
-
-
-# @shared_task(serializer='json')
-# def update_debt(obj_id):
-#     print(obj_id)
-    # obj = Factory.objects.get(id=obj_id.id)
-    # obj.debt = 2
-    # obj.save()

@@ -2,7 +2,7 @@
 from rest_framework import routers
 
 from .views import AllProvidersViewSet, AddressViewSet, ContactViewSet, ProductViewSet, FactoryViewSet, \
-    DilercenterViewSet, DistributorViewSet, RetailChainViewSet, IndividualEntrepreneurViewSet
+    DilercenterViewSet, DistributorViewSet, RetailChainViewSet, IndividualEntrepreneurViewSet, SendEmailViewSet
 
 router = routers.DefaultRouter()
 router.register(r'all', AllProvidersViewSet, basename='all')
@@ -15,10 +15,6 @@ router.register(r'dilercenter', DilercenterViewSet, basename='dilercenter')
 router.register(r'distributor', DistributorViewSet, basename='distributor')
 router.register(r'retail_chain', RetailChainViewSet, basename='retail_chain')
 router.register(r'individual_entrepreneur', IndividualEntrepreneurViewSet, basename='individual_entrepreneur')
+router.register(r'send_email', SendEmailViewSet, basename='send_email')
 urlpatterns = router.urls
 
-# urlpatterns = [
-#     path('address/', AddressViewSet.as_view({'get': 'list'})),
-#     path('address/<int:pk>', AddressViewSet.as_view({'get': 'retrieve'})),
-#     path('contact/', ContactViewSet.as_view({'get': 'list'})),
-# ]

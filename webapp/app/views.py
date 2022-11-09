@@ -1,11 +1,18 @@
+import os
 from decimal import Decimal
 
-from django.db.models import Avg
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+import qrcode
+from django.utils.baseconv import base64
 from rest_framework import viewsets, status
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from test_task.settings import BASE_DIR, EMAIL_HOST_USER
 from .models import Address, Contact, Product, Factory, Dilercenter, IndividualEntrepreneur, RetailChain, Distributor, \
     Country
 from .permissions import IsActiveUser, IsOwnerOrReadOnly
@@ -15,7 +22,8 @@ from .serializers import AddressSerializer, ContactSerializer, ProductSerializer
 
 
 class MyCustomViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsOwnerOrReadOnly, IsActiveUser,)
+    permission_classes = (IsAuthenticated, IsActiveUser,)
+    authentication_classes = (TokenAuthentication, )
 
     def create(self, request, *args, **kwargs):
         if isinstance(request.data['contact'], dict):
@@ -193,3 +201,26 @@ class AllProvidersViewSet(viewsets.ViewSet):
             "retail_chain": serializer_rc.data,
             "individual_entrepreneur": serializer_ie.data
         }
+
+
+class SendEmailViewSet(viewsets.ViewSet):
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated, IsActiveUser,)
+    authentication_classes = (TokenAuthentication,)
+
+    def create(self, request, *args, **kwargs):
+        user = self.queryset.get(id=request.user.id)
+        data = f"<img src=cid:'{self.generate_qr_code(user)}'>"
+
+        send_mail(subject='Welcome!', message='', from_email=EMAIL_HOST_USER, html_message=data,
+                  recipient_list=[user.email], fail_silently=False)
+
+        return Response({"Success"})
+
+    def generate_qr_code(self, user):
+        img = qrcode.make(f'{user.id} {user.first_name} {user.email}')
+        img_title = f"{user.id}_{user}.png"
+        img.save(os.path.join(BASE_DIR, f"static/qr/{img_title}"))
+        # qr_image = True
+
+        return os.path.join(BASE_DIR, f"static/qr/{img_title}")
