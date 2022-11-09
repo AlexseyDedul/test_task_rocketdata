@@ -1,9 +1,9 @@
 ./webapp/venv
 /webapp/venv
 webapp/venv
-.idea
-/.idea
-./.idea
+./webapp/.idea
+/webapp/.idea
+./webapp/.idea
 __pycache__
 ./webapp/test_task/.env
 /webapp/test_task/.env
